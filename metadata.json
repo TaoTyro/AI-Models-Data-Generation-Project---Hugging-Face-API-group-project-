@@ -1,0 +1,20 @@
+{
+  "title": "Hugging Face AI Model Release Dataset",
+  "group": [
+    "Clive Chinkhuntha ",
+    "Chisomo Kawanga ",
+    "Vanessa Pemba ",
+    "Prisca Mtengowaminga ",
+    "Anette Ching'amba ",
+    "Taonga Kamanga "
+  ],
+  "date": "2025-12-10",
+  "generation_method": "Hugging Face public API",
+  "parameters": {
+    "n_samples": 1001,
+    "img_size": [224,224]
+  },
+  "source": "https://huggingface.co/api/models?full=true",
+  "license": "Metadata only; model weights not redistributed.",
+  "contact": "taongakamanga371@gmail.com"
+}
