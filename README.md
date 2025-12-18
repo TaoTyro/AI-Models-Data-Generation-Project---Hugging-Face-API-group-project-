@@ -146,38 +146,128 @@ df[["likes", "downloads", "trendingScore"]].corr()
 #### Bar Chart – Downloads by Category
 
 ```python
-df.groupby("category")["downloads"].sum().plot(kind="bar")
-plt.title("Downloads by Category")
-plt.savefig("downloads_by_category.png")
+# Step 1: Count how many times each category appears
+category_counts = df["category"].value_counts()
+
+# Step 2: Filter categories with count >= 1
+valid_categories = category_counts[category_counts >= 1].index
+
+# Step 3: Filter the DataFrame
+filtered_df = df[df["category"].isin(valid_categories)]
+
+# Step 4: Aggregate Likes (sum or mean)
+likes_by_category = filtered_df.groupby("category")["downloads"].sum()
+
+# Step 5: Plot bar chart
+plt.figure(figsize=(15,5))
+likes_by_category.plot(kind="bar", color="skyblue")
+
+plt.xlabel("Category")
+plt.ylabel("Total downloads")
+plt.title("trendingScores by Category (only categories with ≥ 1 occurrences)")
+
+# Save chart
+plt.savefig("downloads_by_category_filtered.png", dpi=300, bbox_inches="tight")
+
 plt.show()
 ```
 
 #### Bar Chart – Likes by Category
 
 ```python
-df.groupby("category")["likes"].sum().plot(kind="bar")
-plt.title("Likes by Category")
-plt.savefig("likes_by_category.png")
+# Step 1: Count how many times each category appears
+category_counts = df["category"].value_counts()
+
+# Step 2: Filter categories with count >= 1
+valid_categories = category_counts[category_counts >= 1].index
+
+# Step 3: Filter the DataFrame
+filtered_df = df[df["category"].isin(valid_categories)]
+
+# Step 4: Aggregate Likes (sum or mean)
+likes_by_category = filtered_df.groupby("category")["likes"].sum()
+
+# Step 5: Plot bar chart
+plt.figure(figsize=(15,5))
+likes_by_category.plot(kind="bar", color="skyblue")
+
+plt.xlabel("Category")
+plt.ylabel("Total Likes")
+plt.title("Likes by Category (only categories with ≥ 1 occurrences)")
+
+# Save chart
+plt.savefig("likes_by_category_filtered.png", dpi=300, bbox_inches="tight")
+
 plt.show()
 ```
 
 #### Bar Chart – Trending Score by Category
 
 ```python
-df.groupby("category")["trendingScore"].sum().plot(kind="bar")
-plt.title("Trending Score by Category")
-plt.savefig("trendingScores_by_category.png")
+# Step 1: Count how many times each category appears
+category_counts = df["category"].value_counts()
+
+# Step 2: Filter categories with count >= 10
+valid_categories = category_counts[category_counts >= 1].index
+
+# Step 3: Filter the DataFrame
+filtered_df = df[df["category"].isin(valid_categories)]
+
+# Step 4: Aggregate Likes (sum or mean)
+likes_by_category = filtered_df.groupby("category")["trendingScore"].sum()
+
+# Step 5: Plot bar chart
+plt.figure(figsize=(15,5))
+likes_by_category.plot(kind="bar", color="skyblue")
+
+plt.xlabel("Category")
+plt.ylabel("Total trendingScores")
+plt.title("trendingScores by Category (only categories with ≥ 1 occurrences)")
+
+# Save chart
+plt.savefig("trendingScores_by_category_filtered.png", dpi=300, bbox_inches="tight")
+
 plt.show()
 ```
 
-#### Pie Chart – Distribution by Year
+#### Pie Chart – Category Distribution
 
 ```python
-category_counts = df["year"].value_counts()
+# Count occurrences of each category
+category_counts = df["category"].head(20).value_counts()
+
+# Plot pie chart
 plt.figure(figsize=(6,6))
-plt.pie(category_counts, labels=category_counts.index, autopct="%1.1f%%")
+plt.pie(
+    category_counts,
+    labels=category_counts.index,   # category names
+    autopct="%1.1f%%",              # show percentages
+    startangle=90,                  # rotate start
+    colors=["skyblue", "lightgreen", "orange", "pink"]  
+)
+
+plt.title("Category Distribution")
+plt.savefig("category_pie.png", dpi=300, bbox_inches="tight")  # save chart
+plt.show()
+```
+### Pie Chart – Distribution by Year
+
+```python
+# Count occurrences of each category
+category_counts = df["Year"].value_counts()
+
+# Plot pie chart
+plt.figure(figsize=(6,6))
+plt.pie(
+    category_counts,
+    labels=category_counts.index,   # category names
+    autopct="%1.1f%%",              # show percentages
+    startangle=90,                  # rotate start
+    colors=["skyblue", "lightgreen", "orange", "pink"] 
+)
+
 plt.title("Distribution by Year")
-plt.savefig("Year_pie.png")
+plt.savefig("Year_pie.png", dpi=300, bbox_inches="tight")  # save chart
 plt.show()
 ```
 
