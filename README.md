@@ -1,244 +1,223 @@
-README – AI Model Release Trends Analysis (Hugging Face)
-Project Title
+# AI Model Release Trends Analysis (Hugging Face)
 
-Analysis of AI Model Release Trends Using Hugging Face Metadata
+This README is **directly from the project Jupyter Notebook (`ict.ipynb`)** and documents each processing step **with the actual code snippets used** in the original projects' Notebook.
 
+---
 
-Research Methods – 2025
+## 📌 Project Description
 
-Group Members:
+This project analyzes trends in AI model releases using metadata retrieved from the **Hugging Face public API**. The focus is on identifying dominant AI model categories and popularity indicators such as downloads, likes, and trending scores.
 
-Vanessa Pemba
+---
 
-Clive Chinkhuntha
+## 📊 Data Source
 
-Annette Ching'amba
+* **Platform:** Hugging Face
+* **API Endpoint:** `https://huggingface.co/api/models`
+* **Access:** Public (no authentication required)
+* **Format:** JSON
 
-Taonga Kamanga
+---
 
-Prisca Mtengowaminga
+## 🛠️ Tools and Environment
 
-Chisomo Kawanga
+* **Language:** Python 3.10+
+* **Environment:** Jupyter Notebook
 
-Submission Date:  19/12/2025
+### Install and Import the following Libraries to be used
 
+```python
+import requests
+import json
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+```
 
-1. Project Overview
+---
 
-This project investigates trends in Artificial Intelligence (AI) model releases across four major categories: Text, Vision, Audio, and Multimodal. Using publicly available metadata from the Hugging Face platform, the study analyses model release frequency, downloads, likes, and trending scores. The objective is to understand how recent advances in Large Language Models (LLMs) and generative AI technologies are shaping current AI research and development trends.
+## 🔄 Project Workflow with Code Snippets
 
+Follow each step below respectively to obtain similar results.
 
-2. Research Question and Hypothesis
-Research Question
+---
 
-Which types of AI models are released most frequently (Text, Vision, Audio), and what does this indicate about current AI research trends?
+### Step 1: Fetch Data from Hugging Face API
 
-Hypothesis
+This block retrieves AI model metadata using an HTTP GET request.
 
-Model releases in the Text category have increased sharply in the this year(2025) due to rapid advancements in LLMs and generative AI.
+```python
+url = "https://huggingface.co/api/models"
+response = requests.get(url)
+data = response.json()
+print(data)
+```
 
+The raw response is stored for inspection and reuse.
 
-3. Data Source
+---
 
-Platform: Hugging Face
+### Step 2: Save Raw Data
 
-API Endpoint: https://huggingface.co/api/models
+The retrieved JSON data is saved locally to preserve the original dataset.
 
-Access Type: Public (no authentication required)
+```python
+with open("models.json", "w") as f:
+    json.dump(data, f)
+```
 
-Data Format: Structured JSON
+---
 
-Data Type: Quantitative
+### Step 3: Load Data into a Pandas DataFrame
 
-Collected Fields
+The JSON data is converted into tabular form for analysis.
 
-Model name
+```python
+df = pd.DataFrame(data)
+df.head()
+```
 
-Category (pipeline_tag: text, vision, audio, multimodal)
+---
 
-Year (derived from createdAt)
+### Step 4: Select Relevant Columns
 
-Downloads
+Only useful fields are retained for analysis.
 
-Likes
+```python
+df = df[["modelId", "pipeline_tag", "createdAt", "downloads", "likes", "trendingScore"]]
+```
 
-Trending score
+---
 
+### Step 5: Feature Engineering (Year Extraction & Category Naming)
 
-4. Tools and Technologies
-Programming Language
+The model creation timestamp is converted into a release year, and categories are standardized.
 
-Python 3.10 or higher
+```python
+df["year"] = pd.to_datetime(df["createdAt"]).dt.year
+df = df.rename(columns={"pipeline_tag": "category"})
+```
 
+---
 
-Environment
+### Step 6: Data Cleaning
 
-Jupyter Notebook
+This block removes incomplete and duplicate records and validates numeric fields.
 
+```python
+df = df.dropna(subset=["category", "year"])
+df = df.drop_duplicates()
 
-Libraries Used
+df[["downloads", "likes", "trendingScore"]] = df[["downloads", "likes", "trendingScore"]].clip(lower=0)
+```
 
-pandas
+---
 
-requests
+### Step 7: Save Cleaned Dataset
 
-matplotlib
+The cleaned dataset is exported for reuse.
 
-seaborn
+```python
+df.to_csv("cleaned_model_data.csv", index=False)
+```
 
-numpy
+---
 
+### Step 8: Exploratory Data Analysis
 
-5. Project Folder Structure
+Basic statistics and category counts are computed here.
+
+```python
+df.describe()
+df["category"].value_counts()
+```
+
+Correlation analysis between popularity metrics:
+
+```python
+df[["likes", "downloads", "trendingScore"]].corr()
+```
+
+---
+
+### Step 9: Data Visualization
+
+#### Bar Chart – Downloads by Category
+
+```python
+df.groupby("category")["downloads"].sum().plot(kind="bar")
+plt.title("Downloads by Category")
+plt.savefig("downloads_by_category.png")
+plt.show()
+```
+
+#### Bar Chart – Likes by Category
+
+```python
+df.groupby("category")["likes"].sum().plot(kind="bar")
+plt.title("Likes by Category")
+plt.savefig("likes_by_category.png")
+plt.show()
+```
+
+#### Bar Chart – Trending Score by Category
+
+```python
+df.groupby("category")["trendingScore"].sum().plot(kind="bar")
+plt.title("Trending Score by Category")
+plt.savefig("trendingScores_by_category.png")
+plt.show()
+```
+
+#### Pie Chart – Distribution by Year
+
+```python
+category_counts = df["year"].value_counts()
+plt.figure(figsize=(6,6))
+plt.pie(category_counts, labels=category_counts.index, autopct="%1.1f%%")
+plt.title("Distribution by Year")
+plt.savefig("Year_pie.png")
+plt.show()
+```
+
+---
+
+## 📁 Project Structure
+
+```text
 data_generation/
 │
-├── ict.ipynb              # Main Jupyter Notebook             
-├── cleaned_model_data.csv # Cleaned and validated dataset
-├── metadata.json          # Dataset metadata
-├── figures/               # Generated visualisations
+├── ict.ipynb              # Main analysis notebook
+├── models.json            # Raw API data
+├── cleaned_model_data.csv # Cleaned dataset
+├── figures/               # Generated visualizations
 │   ├── downloads_by_category.png
 │   ├── likes_by_category.png
 │   ├── trendingScores_by_category.png
-│   ├── category_distribution.png
 │   └── Year_pie.png
-└── README.md              # Project documentation
+└── README.md              # Documentation
+```
 
+---
 
-6. Steps to Reproduce the Dataset and Analysis
-Step 1: Install Python
+## 📈 Key Findings
 
-Ensure Python version 3.10 or higher is installed.
+* Text-based models dominate model releases and popularity metrics.
+* High engagement metrics reflect rapid growth in LLM research.
+* Recent years show a sharp increase in AI model releases.
 
-Check the version:
+---
 
-python --version
+## ♻️ Reproducibility & Ethics
 
-Step 2: Create and Activate a Virtual Environment (Recommended)
+* Public, deterministic data source
+* No personal or sensitive information used
+* Fully reproducible by running the notebook top-to-bottom
 
-Create the environment:
+---
 
-python -m venv venv
+## 👥 Maintainers
 
-
-Activate:
-
-Windows
-
-venv\Scripts\activate
-
-
-Linux / macOS
-
-source venv/bin/activate
-
-Step 3: Install Required Libraries
-pip install pandas requests matplotlib seaborn numpy
-
-Step 4: Launch Jupyter Notebook
-jupyter notebook
-
-
-Open the notebook file:
-
-ict.ipynb
-
-Step 5: Execute Notebook Cells Sequentially
-
-Run all cells from top to bottom in the following order:
-
-Import libraries
-
-Retrieve data from the Hugging Face API
-
-Save raw data to models.csv
-
-Clean and preprocess the dataset
-
-Generate visualisations
-
-Export the cleaned dataset
-
-⚠️ Important: Skipping cells may cause errors or missing outputs.
-
-
-7. Data Cleaning and Validation
-Cleaning Procedures
-
-Removed records with missing category or year
-
-Converted timestamps to year format
-
-Removed duplicate model entries
-
-Ensured numeric values (downloads, likes, trending score) were valid and non-negative
-
-Validation Checks
-
-Verified category distributions
-
-Checked yearly release trends
-
-Compared summary statistics before and after cleaning
-
-
-8. Data Analysis and Visualisation
-Visualisations Produced
-
-Bar Charts
-
-Category vs Downloads
-
-Category vs Likes
-
-Category vs Trending Score
-
-Pie Chart
-
-Distribution of models released per year
-
-Interpretation
-
-The analysis shows that Text-based models dominate in both release frequency and popularity metrics. This strongly supports the hypothesis that LLM-focused research is the primary driver of recent AI development trends.
-
-
-9. Reproducibility Notes
-
-All data was obtained from a public API
-
-No random seeds were required (deterministic data)
-
-Full analysis can be reproduced using the provided notebook
-
-No sensitive or personal data was collected
-
-
-10. Ethical and Privacy Considerations
-
-All data is publicly available
-
-No personal or user-level information collected
-
-Minimal privacy risk
-
-Complies with Hugging Face terms of service
-
-
-11. Expected Outputs
-
-After successful execution, the following files should be generated:
-
-models.csv
-
-cleaned_models.csv
-
-Four visualisation images stored in /figures
-
-Updated metadata.json
-
-
-12. Contact / Maintainer
-
-Project Maintained By:
-Research Methods Group 6 
-Mzuzu University
-Department of ICT
+**Research Methods Group 6**
+Mzuzu University – Department of ICT
