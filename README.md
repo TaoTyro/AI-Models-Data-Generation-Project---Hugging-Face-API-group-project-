@@ -10,6 +10,24 @@ This project analyzes trends in AI model releases using metadata retrieved from 
 
 ---
 
+## 📁 Project Structure
+
+```text
+data_generation/
+│
+├── ict.ipynb              # Main analysis notebook
+├── models.json            # Raw API data
+├── cleaned_model_data.csv # Cleaned dataset
+├── figures/               # Generated visualizations
+│   ├── downloads_by_category.png
+│   ├── likes_by_category.png
+│   ├── trendingScores_by_category.png
+│   └── Year_pie.png
+└── README.md              # Documentation
+```
+
+---
+
 ## 📊 Data Source
 
 * **Platform:** Hugging Face
@@ -273,24 +291,6 @@ plt.show()
 
 ---
 
-## 📁 Project Structure
-
-```text
-data_generation/
-│
-├── ict.ipynb              # Main analysis notebook
-├── models.json            # Raw API data
-├── cleaned_model_data.csv # Cleaned dataset
-├── figures/               # Generated visualizations
-│   ├── downloads_by_category.png
-│   ├── likes_by_category.png
-│   ├── trendingScores_by_category.png
-│   └── Year_pie.png
-└── README.md              # Documentation
-```
-
----
-
 ## 📈 Key Findings
 
 * Text-based models dominate model releases and popularity metrics.
@@ -310,4 +310,4 @@ data_generation/
 ## 👥 Maintainers
 
 **Research Methods Group 6**
-Mzuzu University – Department of ICT
+Mzuzu University – ICT Department 
